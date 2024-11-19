@@ -282,7 +282,7 @@ int main() {
 
 	PROC_INFO* pProcInfo = (PROC_INFO*)_aligned_malloc(sizeof(*pProcInfo), PAGE_SIZE);
 	memset(pProcInfo, 0, sizeof(*pProcInfo));
-	CPU::CPUIDVmCall(VMCALL_GET_INFO, (ULONG64)pProcInfo, (ULONG64)gameCr3, sklibKey);
+	CPU::CPUIDVmCall(VMCALL_GET_INFO, (ULONG64)pProcInfo, (ULONG64)&gameCr3, sklibKey);
 	Log("Process base: %p", pProcInfo->imageBase);
 
 	kernelRequest.procInfo = *pProcInfo;
