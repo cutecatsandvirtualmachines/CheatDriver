@@ -142,21 +142,23 @@ void ParseCmd(InternalManager& mng, CMD& cmd) {
 		if (!cmd.cmd.hook.src || !cmd.cmd.hook.dst)
 			break;
 
-		if (bEPTHide) {
-			KERNEL_REQUEST kernelRequest;
-			kernelRequest.instructionID = INST_SHADOW;
-			kernelRequest.procInfo.cr3 = &gameCr3;
-			kernelRequest.procInfo.pEprocess = gameEprocess;
-			kernelRequest.memoryInfo.opSize = INTERNAL_HOOK_SIZE;
-			kernelRequest.memoryInfo.opDstAddr = (ULONG64)cmd.cmd.hook.src;
-			if (!vdm.CallbackInvoke(&kernelRequest)) {
-				Log("Failed requesting module shadowing: 0x%llx", (ULONG64)cmd.cmd.hook.src);
-			}
-		}
-
 		HANDLE hHook = mng.Hook(cmd.cmd.hook.src, cmd.cmd.hook.dst, cmd.cmd.hook.jTableOffset);
 		if (hHook)
+		{
 			vHooks.push_back(hHook);
+			if (bEPTHide) {
+				KERNEL_REQUEST kernelRequest;
+				kernelRequest.instructionID = INST_SHADOW;
+				kernelRequest.procInfo.cr3 = &gameCr3;
+				kernelRequest.procInfo.pEprocess = gameEprocess;
+				kernelRequest.memoryInfo.opSize = INTERNAL_HOOK_SIZE;
+				kernelRequest.memoryInfo.opDstAddr = (ULONG64)cmd.cmd.hook.src;
+				if (!vdm.CallbackInvoke(&kernelRequest)) {
+					Log("Failed requesting module shadowing: 0x%llx", (ULONG64)cmd.cmd.hook.src);
+				}
+			}
+		}
+			
 		break;
 	}
 	default:
